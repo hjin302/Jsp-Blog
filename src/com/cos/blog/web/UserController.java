@@ -1,6 +1,9 @@
 package com.cos.blog.web;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.cos.blog.domain.user.dto.JoinReqDto;
 import com.cos.blog.domain.user.dto.LoginReqDto;
 import com.cos.blog.service.UserService;
+import com.cos.blog.util.Script;
 
 // http://localhost:8051/user
 @WebServlet("/user")
@@ -63,9 +67,25 @@ public class UserController extends HttpServlet {
 			dto.setPassword(password);
 			dto.setEmail(email);
 			dto.setAddress(address);
-			
-			userService.회원가입(dto);
-			
+			System.out.println("회원가입 : " + dto);
+			int result = userService.회원가입(dto);
+			if(result==1) {
+				response.sendRedirect("index.jsp");
+			}else {
+				Script.back(response, "회원가입 실패"); 
+			}
+		}else if(cmd.equals("usernameCheck")) {
+			BufferedReader br = request.getReader();
+			String username = br.readLine();
+			System.out.println(username);
+			int result = userService.유저네임중복체크(username);
+			PrintWriter out = response.getWriter();
+			if(result == 1) {
+				out.print("ok");
+			}else {
+				out.print("fail");
+			}
+			out.flush();
 		}
 		
 	}
